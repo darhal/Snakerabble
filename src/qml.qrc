@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ui/main.qml</file>
+        <file>ui/Globals/qmldir</file>
+        <file>ui/Globals/Globals.qml</file>
+        <file>ui/Snake.qml</file>
+        <file>ui/Snake2.qml</file>
+        <file>ui/Tools.js</file>
+    </qresource>
+</RCC>
