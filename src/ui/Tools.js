@@ -1,13 +1,23 @@
+var ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+function mod(x, n) {
+    return ((x % n) + n) % n;
+}
+
+function randomLetter()
+{
+    return ALPHABET[Math.floor(Math.random() * ALPHABET.length)]
+}
+
 function checkPos(pos1, pos2) {
-    return (pos1[0] == pos2[0]
-            && pos1[1] == pos2[1]);
+    return (pos1[0] === pos2[0] && pos1[1] === pos2[1]);
 }
 
 function posInArray(pos, array) {
     for (var i = 0; i < array.length; ++i)
         if (checkPos(pos, array[i]))
-            return (true);
-    return (false);
+            return true;
+    return false;
 }
 
 var Direction = {
@@ -22,10 +32,6 @@ OPPOSITES[Direction.UP]    = Direction.DOWN;
 OPPOSITES[Direction.DOWN]  = Direction.UP;
 OPPOSITES[Direction.LEFT]  = Direction.RIGHT;
 OPPOSITES[Direction.RIGHT] = Direction.LEFT;
-
-function mod(x, n) {
-    return ((x % n) + n) % n;
-}
 
 var MOVES = new Array;
 MOVES[Direction.UP]    = function(pos, w, h) { pos[1] = mod(pos[1] - 1, h); };

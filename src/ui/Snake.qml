@@ -1,69 +1,87 @@
 import QtQuick
+import Globals
+import "Tools.js" as Tools
 
-Canvas {
-    id: root
-    focus: true
+Item {
+    id: snake
+    property var size: [25, 25]
+    property var parts: [[20, 20], [20, 21], [20, 22], [21, 22], [22, 22]]
+    property var letters: ["A", "B", "C", "D", "E"]
+    property int dir: Tools.Direction.UP
+    property bool canChangeDir: true
 
-    Component {
-        id: comp
-        PathCurve { }
-    }
+    function move() {
+        var head = parts[0].slice(0);
+        var body = parts;
+        body.pop(); // Move body
+        Tools.move(head, dir, Globals.gridWidth, Globals.gridHeight); // Move head
 
-    property var points : [
-        comp.createObject(myPath, {"x": 75, "y": 75})
-    ]
-    contextType: "2d"
+        // Bit itself ?
+        if (Tools.posInArray(head, body))
+            return die();
 
-    Path {
-        id: myPath
-        startX: points[0].x; startY: points[0].y
-        pathElements: points
-    }
+        var foodIdx = foodSpawner.validPositions[head]
 
-    onPaint: {
-        context.lineWidth = 5;
-        context.strokeStyle = Qt.rgba(.4,.6,.8);
-        context.path = myPath;
-        context.stroke();
-    }
-
-    function move(x, y)
-    {
-        for (var i = 0; i < points.length - 1; i++) {
-            points[i].x = points[i+1].x
-            points[i].y = points[i+1].y
+        if (foodIdx) {
+            eat(body, foodIdx)
         }
 
-        points[points.length - 1].x += x
-        points[points.length - 1].y += y
+        // Bit the food ?
+        //if (Tools.checkPos(head, food.pos))
+        //    eat(body);
+        parts = [head].concat(body);
+        canChangeDir = true;
     }
 
-    Keys.onPressed: (event) => {
-        var i = 0;
+    function eat(body, foodIdx) {
+        let foodPos = foodSpawner.positions[foodIdx]
+        body.unshift(foodPos);
+        letters.unshift(foodSpawner.letters[foodIdx])
+        foodSpawner.respawn(foodIdx)
+        gameTimer.interval -= (5 * gameTimer.interval) / 100;
+    }
 
-        switch (event.key) {
-            case Qt.Key_Left:
-                move(-10, 0)
-            break;
-            case Qt.Key_Right:
-                move(10, 0)
-            break;
-            case Qt.Key_Up:
-                move(0, -10)
-            break;
-            case Qt.Key_Down:
-                move(0, 10)
-            break;
-            case Qt.Key_Return:
-                var last = points[0]
-                points.unshift(comp.createObject(myPath, {"x":last.x, "y":last.y}))
-                console.log("crate")
-            break;
+    function die() {
+        print('game over');
+        gameTimer.running = false;
+    }
+
+    function changeDir(newDir) {
+        if (canChangeDir) {
+            if (Tools.OPPOSITES[newDir] != dir) {
+                dir = newDir;
+                canChangeDir = false;
+            }
         }
+    }
 
-        myPath.pathElements = points;
-        context.reset();
-        root.requestPaint()
-        event.accepted = true;
+    Repeater {
+        model: snake.parts
+
+        Rectangle {
+            width: size[0]
+            height: size[1]
+            radius: width
+            color: 'white'
+
+            Text {
+                text: letters[index]
+                anchors.fill: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            Text {
+                visible: Globals.debug
+                anchors.left: parent.right
+                color: "red"
+                text: "("+snake.parts[index][0]+","+snake.parts[index][1]+")"
+            }
+
+            Component.onCompleted: {
+                x = Qt.binding(function() { return snake.parts[index][0] * size[0]; });
+                y = Qt.binding(function() { return snake.parts[index][1] * size[1]; });
+            }
+        }
     }
 }

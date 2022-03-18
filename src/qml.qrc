@@ -6,5 +6,7 @@
         <file>ui/Snake.qml</file>
         <file>ui/Snake2.qml</file>
         <file>ui/Tools.js</file>
+        <file>ui/Arena.qml</file>
+        <file>ui/FoodSpawner.qml</file>
     </qresource>
 </RCC>
