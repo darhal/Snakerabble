@@ -7,7 +7,7 @@ Item {
     property var size: [25, 25]
     property var positions : []
     property var letters: []
-    property var validPositions: []
+    property var validPositions: new Map() // []
 
     Repeater {
         id: repeater
@@ -42,25 +42,27 @@ Item {
 
     function init(n)
     {
-        for (var i = 0; i < n; i++) {
+        for (let i = 0; i < n; i++) {
             let pos = [Math.floor(Math.random() * Globals.gridWidth), Math.floor(Math.random() * Globals.gridHeight)]
             positions.push(pos)
             letters.push(Tools.randomLetter())
-            validPositions[pos] = i
+            // validPositions[pos] = i
+            validPositions.set(Tools.vec2ToStr(pos), i)
         }
 
+        // console.log(JSON.stringify([...validPositions.entries()]))
         repeater.model = positions
         // console.log(positions)
     }
 
     function respawn(idx)
     {
-        console.log("eat")
+        validPositions.delete(Tools.vec2ToStr(positions[idx]))
         positions[idx] = [Math.floor(Math.random() * Globals.gridWidth), Math.floor(Math.random() * Globals.gridHeight)]
         letters[idx] = Tools.randomLetter()
+        validPositions.set(Tools.vec2ToStr(positions[idx]), idx)
         repeater.model = positions
-        validPositions[positions[idx]] = idx
-        delete validPositions[positions[idx]]
+        // console.log(JSON.stringify([...validPositions.entries()]))
     }
 
     Component.onCompleted: init(10)

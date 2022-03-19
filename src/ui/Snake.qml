@@ -5,38 +5,31 @@ import "Tools.js" as Tools
 Item {
     id: snake
     property var size: [25, 25]
-    property var parts: [[20, 20], [20, 21], [20, 22], [21, 22], [22, 22]]
-    property var letters: ["A", "B", "C", "D", "E"]
+    //property var parts: [[20, 20], [20, 21], [20, 22], [21, 22], [22, 22]]
+    //property var letters: ["A", "B", "C", "D", "E"]
     property int dir: Tools.Direction.UP
     property bool canChangeDir: true
 
     function move() {
-        var head = parts[0].slice(0);
-        var body = parts;
-        body.pop(); // Move body
-        Tools.move(head, dir, Globals.gridWidth, Globals.gridHeight); // Move head
+        var head = [client.snakeData.positions[0].x, client.snakeData.positions[0].y];
 
         // Bit itself ?
-        if (Tools.posInArray(head, body))
-            return die();
-
-        var foodIdx = foodSpawner.validPositions[head]
-
-        if (foodIdx) {
-            eat(body, foodIdx)
-        }
+        //if (Tools.posInArray(head, body))
+        //    return die();
 
         // Bit the food ?
-        //if (Tools.checkPos(head, food.pos))
-        //    eat(body);
-        parts = [head].concat(body);
+        var foodIdx = foodSpawner.validPositions.get(Tools.vec2ToStr(head))
+        if (foodIdx != null) {
+            eat(foodIdx)
+        }
+
+        client.snakeData.move(dir, Globals.gridWidth, Globals.gridHeight)
         canChangeDir = true;
     }
 
-    function eat(body, foodIdx) {
+    function eat(foodIdx) {
         let foodPos = foodSpawner.positions[foodIdx]
-        body.unshift(foodPos);
-        letters.unshift(foodSpawner.letters[foodIdx])
+        client.snakeData.eat(foodSpawner.positions[foodIdx][0], foodSpawner.positions[foodIdx][1], foodSpawner.letters[foodIdx])
         foodSpawner.respawn(foodIdx)
         gameTimer.interval -= (5 * gameTimer.interval) / 100;
     }
@@ -56,7 +49,7 @@ Item {
     }
 
     Repeater {
-        model: snake.parts
+        model: client.snakeData.positions.length
 
         Rectangle {
             width: size[0]
@@ -65,7 +58,7 @@ Item {
             color: 'white'
 
             Text {
-                text: letters[index]
+                text: client.snakeData.letters[index]
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -75,12 +68,12 @@ Item {
                 visible: Globals.debug
                 anchors.left: parent.right
                 color: "red"
-                text: "("+snake.parts[index][0]+","+snake.parts[index][1]+")"
+                text: "("+client.snakeData.positions[index].x+","+client.snakeData.positions[index].y+")"
             }
 
             Component.onCompleted: {
-                x = Qt.binding(function() { return snake.parts[index][0] * size[0]; });
-                y = Qt.binding(function() { return snake.parts[index][1] * size[1]; });
+                x = Qt.binding(function() { return client.snakeData.positions[index].x * size[0]; });
+                y = Qt.binding(function() { return client.snakeData.positions[index].y * size[1]; });
             }
         }
     }

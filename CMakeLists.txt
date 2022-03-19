@@ -28,10 +28,15 @@ set(QML_IMPORT_PATH ${QML_IMPORT_PATH}
     FORCE
 )
 
-message(${QML_IMPORT_PATH})
+FILE(GLOB_RECURSE CPP_SOURCES CONFIGURE_DEPENDS LIST_DIRECTORIES false
+    "src/*.h"
+    "src/*.hpp"
+    "src/*.cpp"
+    "src/*.c"
+)
 
 set(PROJECT_SOURCES
-        src/main.cpp
+        ${CPP_SOURCES}
         src/qml.qrc
 )
 

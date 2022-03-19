@@ -4,6 +4,11 @@ function mod(x, n) {
     return ((x % n) + n) % n;
 }
 
+function vec2ToStr(vec)
+{
+    return vec[0]+"_"+vec[1]
+}
+
 function randomLetter()
 {
     return ALPHABET[Math.floor(Math.random() * ALPHABET.length)]

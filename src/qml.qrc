@@ -8,5 +8,7 @@
         <file>ui/Tools.js</file>
         <file>ui/Arena.qml</file>
         <file>ui/FoodSpawner.qml</file>
+        <file>ui/MainMenu.qml</file>
+        <file>ui/SnakeProp.qml</file>
     </qresource>
 </RCC>

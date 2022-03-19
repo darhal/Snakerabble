@@ -22,6 +22,11 @@ Item {
         size: [boxWidth, boxHeight]
     }
 
+    SnakeProp {
+        id: snakeProp
+        size: [boxWidth, boxHeight]
+    }
+
     FoodSpawner {
         id: foodSpawner
         size: [boxWidth, boxHeight]
@@ -29,7 +34,7 @@ Item {
 
     Timer {
         id: gameTimer
-        interval: 175
+        interval: 100
         running: true
         repeat: true
         onTriggered: snake.move()

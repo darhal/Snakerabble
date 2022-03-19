@@ -19,7 +19,6 @@ Item {
 
     Item {
         id: snake
-
         property var parts: [[20, 20], [20, 21], [20, 22], [21, 22], [22, 22]]
         property int dir: Tools.Direction.UP
         property bool canChangeDir: true

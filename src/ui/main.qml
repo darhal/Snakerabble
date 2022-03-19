@@ -9,7 +9,16 @@ Window {
     title: qsTr("Snordle")
 
     Arena {
+        id: arena
+        visible: false
+    }
 
+    MainMenu {
+        anchors.fill: parent
+    }
+
+    Component.onCompleted: {
+        console.log(client.snakeData.data)
     }
 }
 

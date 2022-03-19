@@ -1,6 +1,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
-
+#include <QQmlContext>
+#include "client.hpp"
+#include "server.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +14,13 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
     engine.addImportPath(":/ui/");
+
+    qRegisterMetaType<Client*>("Client*");
+    qRegisterMetaType<Server*>("Server*");
+    engine.rootContext()->setContextProperty("client", Client::getClient());
+    engine.rootContext()->setContextProperty("otherClient", Client::getClient());
+    engine.rootContext()->setContextProperty("server", new Server());
+
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
