@@ -5,12 +5,12 @@
 #include <QUdpSocket>
 #include <qqml.h>
 #include "snakedata.hpp"
+#include "commands.hpp"
 
 class Client : public QObject
 {
     Q_OBJECT
-    // QML_ELEMENT
-    Q_PROPERTY(SnakeData* snakeData READ getSnakeData NOTIFY snakeDataChanged)
+    Q_PROPERTY(SnakeController* snakeController READ getSnakeConroller NOTIFY snakeDataChanged)
     static Client* s_Client;
 public:
     static Client* getClient();
@@ -19,7 +19,11 @@ public:
 
     Q_INVOKABLE void joinGame();
 
-    SnakeData* getSnakeData() { return &snakeData; }
+    void sendGameData();
+
+    SnakeController* getSnakeConroller() { return &snakeController; }
+
+    void handleCommands(Command& cmd);
 
 private slots:
     void processPendingDatagrams();
@@ -29,7 +33,9 @@ signals:
 
 private:
     QUdpSocket* udpSocket = nullptr;
-    SnakeData snakeData;
+    SnakeController snakeController;
+    QVector<SnakeData> otherPlayers;
+    friend class Server;
 };
 
 #endif // CLIENT_HPP

@@ -1,19 +1,18 @@
 #include "snakedata.hpp"
 
 
-QByteArray SnakeData::getSnakeData() const
+QByteArray SnakeController::getBytes() const
 {
     QByteArray bytes;
     QDataStream ds(&bytes, QIODeviceBase::WriteOnly);
-    ds << this->getPositions() << this->getLetters();
+    ds << this->snakeData;
     return bytes;
 }
 
-
-void SnakeData::move(uint direction, uint gridWidth, uint gridHeight)
+void SnakeController::move(uint direction, uint gridWidth, uint gridHeight)
 {
-    auto head = positions.first();
-    positions.pop_back();
+    auto head = snakeData.positions.first();
+    snakeData.positions.pop_back();
 
     auto mod = [](int x, int n) {
         return ((x % n) + n) % n;
@@ -34,13 +33,13 @@ void SnakeData::move(uint direction, uint gridWidth, uint gridHeight)
         break;
     }
 
-    positions.push_front(head);
+    snakeData.positions.push_front(head);
     emit dataChanged();
 }
 
-void SnakeData::eat(uint x, uint y, QChar letter)
+void SnakeController::eat(uint x, uint y, QChar letter)
 {
-    positions.push_front({x, y});
-    letters.push_front(letter);
+    snakeData.positions.push_front({x, y});
+    snakeData.letters.push_front(letter);
     emit dataChanged();
 }

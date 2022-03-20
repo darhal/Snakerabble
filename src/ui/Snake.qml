@@ -11,7 +11,8 @@ Item {
     property bool canChangeDir: true
 
     function move() {
-        var head = [client.snakeData.positions[0].x, client.snakeData.positions[0].y];
+        let sd = client.snakeController.snakeData
+        var head = [sd.positions[0].x, sd.positions[0].y];
 
         // Bit itself ?
         //if (Tools.posInArray(head, body))
@@ -23,13 +24,13 @@ Item {
             eat(foodIdx)
         }
 
-        client.snakeData.move(dir, Globals.gridWidth, Globals.gridHeight)
+        client.snakeController.move(dir, Globals.gridWidth, Globals.gridHeight)
         canChangeDir = true;
     }
 
     function eat(foodIdx) {
         let foodPos = foodSpawner.positions[foodIdx]
-        client.snakeData.eat(foodSpawner.positions[foodIdx][0], foodSpawner.positions[foodIdx][1], foodSpawner.letters[foodIdx])
+        client.snakeController.eat(foodSpawner.positions[foodIdx][0], foodSpawner.positions[foodIdx][1], foodSpawner.letters[foodIdx])
         foodSpawner.respawn(foodIdx)
         gameTimer.interval -= (5 * gameTimer.interval) / 100;
     }
@@ -49,7 +50,7 @@ Item {
     }
 
     Repeater {
-        model: client.snakeData.positions.length
+        model: client.snakeController.snakeData.positions.length
 
         Rectangle {
             width: size[0]
@@ -58,7 +59,7 @@ Item {
             color: 'white'
 
             Text {
-                text: client.snakeData.letters[index]
+                text: client.snakeController.snakeData.letters[index]
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -68,12 +69,12 @@ Item {
                 visible: Globals.debug
                 anchors.left: parent.right
                 color: "red"
-                text: "("+client.snakeData.positions[index].x+","+client.snakeData.positions[index].y+")"
+                text: "("+client.snakeController.snakeData.positions[index].x+","+client.snakeController.snakeData.positions[index].y+")"
             }
 
             Component.onCompleted: {
-                x = Qt.binding(function() { return client.snakeData.positions[index].x * size[0]; });
-                y = Qt.binding(function() { return client.snakeData.positions[index].y * size[1]; });
+                x = Qt.binding(function() { return client.snakeController.snakeData.positions[index].x * size[0]; });
+                y = Qt.binding(function() { return client.snakeController.snakeData.positions[index].y * size[1]; });
             }
         }
     }

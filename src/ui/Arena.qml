@@ -37,7 +37,11 @@ Item {
         interval: 100
         running: true
         repeat: true
-        onTriggered: snake.move()
+        onTriggered: {
+            //if (server.isRunning())
+            //    server.broadcastGameData()
+            snake.move()
+        }
     }
 
     // Keyboard inputs

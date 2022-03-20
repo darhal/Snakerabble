@@ -9,17 +9,14 @@ int main(int argc, char *argv[])
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 #endif
-
     QGuiApplication app(argc, argv);
-
     QQmlApplicationEngine engine;
     engine.addImportPath(":/ui/");
 
     qRegisterMetaType<Client*>("Client*");
     qRegisterMetaType<Server*>("Server*");
     engine.rootContext()->setContextProperty("client", Client::getClient());
-    engine.rootContext()->setContextProperty("otherClient", Client::getClient());
-    engine.rootContext()->setContextProperty("server", new Server());
+    engine.rootContext()->setContextProperty("server", Server::getServer());
 
     const QUrl url(QStringLiteral("qrc:/ui/main.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

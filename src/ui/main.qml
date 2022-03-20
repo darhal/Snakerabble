@@ -16,10 +16,6 @@ Window {
     MainMenu {
         anchors.fill: parent
     }
-
-    Component.onCompleted: {
-        console.log(client.snakeData.data)
-    }
 }
 
 
