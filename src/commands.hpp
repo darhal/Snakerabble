@@ -5,13 +5,15 @@
 #include <QDataStream>
 #include <QDebug>
 #include "snakedata.hpp"
+#include "clientdata.hpp"
 
 struct Command
 {
     enum {
         JOIN_GAME,
+        JOIN_GAME_REPLY,
         BROADCAST_SYNC,
-        SEND_PLAYER_DATA,
+        SEND_PLAYER_DATA
     };
 
     uint id;
@@ -83,31 +85,54 @@ struct JoinGameCmd
     }
 };
 
-// Server to ALL
-struct JoinBroadcastCmd
+struct JoinGameReply
 {
-    using Cmd = JoinBroadcastCmd;
-    constexpr static uint ID = Command::JOIN_GAME;
-    QString name;
-    SnakeData data;
-    uint color;
+    using Cmd = JoinGameReply;
+    constexpr static uint ID = Command::JOIN_GAME_REPLY;
+    QVector<ClientData> playersData;
     uint id;
 
     friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
     {
-        s << data.name << data.data << data.color << data.id;
+        s << data.playersData << data.id;
         return s;
     }
 
     friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
     {
-        s >> data.name >> data.data >> data.color >> data.id;
+        s >> data.playersData >> data.id;
         return s;
     }
 
     friend inline QDebug operator<<(QDebug d, const Cmd& data){
         QDebug nsp = d.nospace();
-        nsp << "JoinBroadcastCmd{"<<data.name<<","<<data.data<<","<<data.color<<","<<data.id<<"}";
+        nsp << "JoinGameReply{"<<data.playersData<<","<<data.id<<"}";
+        return d;
+    }
+};
+
+// Server to ALL
+struct JoinBroadcastCmd
+{
+    using Cmd = JoinBroadcastCmd;
+    constexpr static uint ID = Command::JOIN_GAME;
+    ClientData data;
+
+    friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
+    {
+        s << data.data;
+        return s;
+    }
+
+    friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
+    {
+        s >> data.data;
+        return s;
+    }
+
+    friend inline QDebug operator<<(QDebug d, const Cmd& data){
+        QDebug nsp = d.nospace();
+        nsp << "JoinBroadcastCmd{"<<data.data<<"}";
         return d;
     }
 };
@@ -117,7 +142,7 @@ struct SyncGameCmd
 {
     using Cmd = SyncGameCmd;
     constexpr static uint ID = Command::BROADCAST_SYNC;
-    QVector<SnakeData> playersData;
+    QVector<ClientData> playersData;
 
     friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
     {

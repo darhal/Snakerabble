@@ -11,19 +11,32 @@ class Client : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(SnakeController* snakeController READ getSnakeConroller NOTIFY snakeDataChanged)
+    Q_PROPERTY(QVector<ClientData> otherPlayers READ getOtherPlayers NOTIFY otherPlayersChanged)
     static Client* s_Client;
 public:
     static Client* getClient();
 
-    Client();
+    Client(int id = -1);
 
-    Q_INVOKABLE void joinGame();
+    Q_INVOKABLE void joinGame(const QString& name = "Test", const QHostAddress& ip = QHostAddress::Broadcast, quint16 port = 45454);
 
-    void sendGameData();
+    Q_INVOKABLE void sendGameData();
+
+    template<typename T>
+    void sendCommand(const T& cmdData);
+
+    void handleCommands(Command& cmd);
 
     SnakeController* getSnakeConroller() { return &snakeController; }
 
-    void handleCommands(Command& cmd);
+    const QVector<ClientData>& getOtherPlayers() const { return otherPlayers; }
+
+    void setId(int id) { myId = id; }
+
+    void setOtherPlayers(const QVector<ClientData> op) {
+        otherPlayers = op;
+        emit otherPlayersChanged();
+    }
 
 private slots:
     void processPendingDatagrams();
@@ -31,10 +44,15 @@ private slots:
 signals:
     void snakeDataChanged();
 
+    void otherPlayersChanged();
+
 private:
     QUdpSocket* udpSocket = nullptr;
     SnakeController snakeController;
-    QVector<SnakeData> otherPlayers;
+    QVector<ClientData> otherPlayers;
+    QHostAddress serverIp;
+    quint16 port;
+    int myId;
     friend class Server;
 };
 

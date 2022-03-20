@@ -3,10 +3,11 @@ import Globals
 import "Tools.js" as Tools
 
 Window {
+    id: mainWindow
     width: Globals.screen_width
     height: Globals.screen_height
     visible: true
-    title: qsTr("Snordle")
+    title: "Snordle"
 
     Arena {
         id: arena

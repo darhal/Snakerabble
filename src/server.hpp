@@ -18,7 +18,10 @@ public:
 
     Server();
 
-    void handleCommands(Command& cmd);
+    void handleCommands(Command& cmd, const QHostAddress& adr, quint16 port);
+
+    template<typename T>
+    void sendCommand(const T& cmdData, const QHostAddress& adr = QHostAddress::Broadcast, quint16 port = 45454);
 
     Q_INVOKABLE void broadcastGameData();
 
@@ -26,12 +29,13 @@ public:
 
     Q_INVOKABLE bool isRunning() { return udpSocket != nullptr; }
 
+    const QVector<ClientData>& getClientsData() { return m_Clients; }
 private slots:
     void processPendingDatagrams();
 
 private:
     QUdpSocket* udpSocket = nullptr;
-    QVector<Client*> m_Clients;
+    QVector<ClientData> m_Clients;
 };
 
 #endif // SERVER_HPP

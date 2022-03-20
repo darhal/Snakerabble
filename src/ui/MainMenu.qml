@@ -28,6 +28,10 @@ Item {
             text: "Host a game"
             onClicked: {
                 server.hostGame();
+                mainWindow.title = "Snordle : Server"
+                root.visible = false
+                arena.visible = true
+                arena.focus = true
             }
         }
 
@@ -39,6 +43,7 @@ Item {
                 client.joinGame()
                 root.visible = false
                 arena.visible = true
+                arena.focus = true
             }
         }
     }

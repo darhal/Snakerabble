@@ -19,12 +19,18 @@ Item {
 
     Snake {
         id: snake
+        visible: true
         size: [boxWidth, boxHeight]
     }
 
-    SnakeProp {
-        id: snakeProp
-        size: [boxWidth, boxHeight]
+    Repeater {
+        id: otherPlayersProp
+        model: client.otherPlayers.length
+
+        SnakeProp {
+            clientId: index
+            size: [boxWidth, boxHeight]
+        }
     }
 
     FoodSpawner {
@@ -34,12 +40,13 @@ Item {
 
     Timer {
         id: gameTimer
-        interval: 100
+        interval: 200
         running: true
         repeat: true
         onTriggered: {
-            //if (server.isRunning())
-            //    server.broadcastGameData()
+            client.sendGameData()
+            if (server.isRunning())
+                server.broadcastGameData()
             snake.move()
         }
     }

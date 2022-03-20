@@ -4,11 +4,12 @@ import "Tools.js" as Tools
 
 Item {
     id: snakeProp
+    property int clientId: 0
     property var size: [25, 25]
-    visible: otherClient.snakeData.positions.length != 0
+    visible: client.otherPlayers.length != 0
 
     Repeater {
-        model: otherClient.snakeData.positions.length
+        model: client.otherPlayers[clientId].pdata.positions.length
 
         Rectangle {
             width: size[0]
@@ -17,7 +18,7 @@ Item {
             color: 'white'
 
             Text {
-                text: otherClient.snakeData.letters[index]
+                text: client.otherPlayers[clientId].pdata.letters[index]
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -27,12 +28,12 @@ Item {
                 visible: Globals.debug
                 anchors.left: parent.right
                 color: "red"
-                text: "("+otherClient.snakeData.positions[index].x+","+otherClient.snakeData.positions[index].y+")"
+                text: "("+client.otherPlayers[clientId].pdata.positions[index].x+","+client.otherPlayers[clientId].pdata.positions[index].y+")"
             }
 
             Component.onCompleted: {
-                x = Qt.binding(function() { return otherClient.snakeData.positions[index].x * size[0]; });
-                y = Qt.binding(function() { return otherClient.snakeData.positions[index].y * size[1]; });
+                x = Qt.binding(function() { return client.otherPlayers[clientId].pdata.positions[index].x * size[0]; });
+                y = Qt.binding(function() { return client.otherPlayers[clientId].pdata.positions[index].y * size[1]; });
             }
         }
     }
