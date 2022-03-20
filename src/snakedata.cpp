@@ -39,7 +39,6 @@ void SnakeController::move(uint direction, uint gridWidth, uint gridHeight)
 
 void SnakeController::eat(uint x, uint y, QChar letter)
 {
-    snakeData.positions.push_front({x, y});
-    snakeData.letters.push_front(letter);
-    emit dataChanged();
+    snakeData.eat(x, y, letter);
+    // emit dataChanged();
 }

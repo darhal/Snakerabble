@@ -5,13 +5,10 @@ import "Tools.js" as Tools
 Item {
     id: foodSpawner
     property var size: [25, 25]
-    property var positions : []
-    property var letters: []
-    property var validPositions: new Map() // []
 
     Repeater {
         id: repeater
-        model: foodSpawner.positions
+        model: server.foodSpawner.foodData.length
 
         Rectangle {
             width: size[0]
@@ -20,7 +17,7 @@ Item {
             color: 'yellow'
 
             Text {
-                text: foodSpawner.letters[index]
+                text: server.foodSpawner.foodData[index].letter
                 anchors.fill: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -30,17 +27,17 @@ Item {
                 visible: Globals.debug
                 anchors.left: parent.right
                 color: "red"
-                text: "("+foodSpawner.positions[index][0]+","+foodSpawner.positions[index][1]+")"
+                text: "("+server.foodSpawner.foodData[index].x+","+server.foodSpawner.foodData[index].y+")"
             }
 
             Component.onCompleted: {
-                x = Qt.binding(function() { return foodSpawner.positions[index][0] * size[0]; });
-                y = Qt.binding(function() { return foodSpawner.positions[index][1] * size[1]; });
+                x = Qt.binding(function() { return server.foodSpawner.foodData[index].x * size[0]; });
+                y = Qt.binding(function() { return server.foodSpawner.foodData[index].y * size[1]; });
             }
         }
     }
 
-    function init(n)
+    /*function init(n)
     {
         for (let i = 0; i < n; i++) {
             let pos = [Math.floor(Math.random() * Globals.gridWidth), Math.floor(Math.random() * Globals.gridHeight)]
@@ -65,5 +62,5 @@ Item {
         // console.log(JSON.stringify([...validPositions.entries()]))
     }
 
-    Component.onCompleted: init(10)
+    Component.onCompleted: init(10)*/
 }

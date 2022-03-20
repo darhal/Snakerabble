@@ -14,8 +14,24 @@ Window {
         visible: false
     }
 
+    HostMenu {
+        id: hostMenu
+        anchors.fill: parent
+        visible: false
+    }
+
+    JoinMenu {
+        id: joinMenu
+        anchors.fill: parent
+        visible: false
+    }
+
     MainMenu {
         anchors.fill: parent
+    }
+
+    Component.onCompleted: {
+        server.init(Globals.gridWidth, Globals.gridHeight)
     }
 }
 

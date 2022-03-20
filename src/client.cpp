@@ -10,7 +10,7 @@ Client* Client::getClient()
     return s_Client;
 }
 
-Client::Client(int id) : myId(id)
+Client::Client(uint id) : myId(id)
 {
     snakeController << SnakePieceData{20, 20, 'A'};
     snakeController << SnakePieceData{20, 21, 'B'};
@@ -19,19 +19,39 @@ Client::Client(int id) : myId(id)
     snakeController << SnakePieceData{22, 22, 'E'};
 }
 
+void Client::eat(uint x, uint y)
+{
+    auto server = Server::getServer();
+    auto foodSpawner = server->getFoodSpawner();
+    auto food = foodSpawner->get({x, y});
+
+    if (food.letter == QChar(0))
+        return;
+
+    if (server->isRunning() || myId == UINT_MAX) {
+        server->handleEat(snakeController.getSnakeData(), food, UINT_MAX);
+    }else{
+        this->snakeController.eat(food.x, food.y, food.letter);
+        this->sendCommand(EatFoodCmd{food, (uint)myId});
+    }
+}
+
 void Client::joinGame(const QString& name, const QHostAddress& ip, quint16 port)
 {
+    qDebug() << ip;
+    Server::getServer()->setLocal(false);
     udpSocket = new QUdpSocket(this);
     udpSocket->bind(port, QUdpSocket::ShareAddress);
     connect(udpSocket, &QUdpSocket::readyRead, this, &Client::processPendingDatagrams);
     this->serverIp = ip;
     this->port = port;
+    this->name = name;
     this->sendCommand(JoinGameCmd{name, this->getSnakeConroller()->getSnakeData(), 1234});
 }
 
 void Client::sendGameData()
 {
-    if (Server::getServer()->isRunning() || myId == -1) // I'm server or I'm in SP
+    if (Server::getServer()->isRunning() || myId == UINT_MAX) // I'm server or I'm in SP
         return;
     this->sendCommand(SendPlayerCmd{this->getSnakeConroller()->getSnakeData(), (uint)myId});
 }
@@ -45,12 +65,14 @@ void Client::handleCommands(Command& cmd)
         }else{
             this->myId = jgr.id;
             jgr.playersData.pop_back();
-            this->otherPlayers = jgr.playersData;
-            emit otherPlayersChanged();
+            this->otherPlayers = std::move(jgr.playersData);
+            this->otherPlayers.emplaceBack(std::move(jgr.hostData));
             qDebug() << "You have joined the game with id = " << jgr.id;
+            Server::getServer()->getFoodSpawner()->init(jgr.foodData);
+            emit otherPlayersChanged();
         }
     }else if (cmd.id == Command::BROADCAST_SYNC){
-        if (myId == -1) return;
+        if (myId == UINT_MAX) return;
 
         if (Server::getServer()->isRunning()) {
             otherPlayers = Server::getServer()->getClientsData();
@@ -59,9 +81,24 @@ void Client::handleCommands(Command& cmd)
         }
 
         SyncGameCmd sgmd = cmd.getData<SyncGameCmd>();
+        // this->snakeController.setData(otherPlayers[myId].pdata);
+        otherPlayers = std::move(sgmd.playersData);
         otherPlayers.erase(otherPlayers.begin() + myId);
-        otherPlayers = sgmd.playersData;
+        this->otherPlayers.emplaceBack(std::move(sgmd.hostData));
         emit otherPlayersChanged();
+    }else if (cmd.id == Command::RESPAWN_FOOD) {
+        auto rfcmd = cmd.getData<RespawnFood>();
+
+        if (rfcmd.pid == myId) {
+            qDebug() << "CONFIRM : I ate at " << rfcmd.toDelete.x << "," << rfcmd.toDelete.y;
+            // this->snakeController.eat(rfcmd.toDelete.x, rfcmd.toDelete.y, rfcmd.toDelete.letter);
+        }else{
+            if (rfcmd.pid != UINT_MAX)
+                otherPlayers[rfcmd.pid].pdata.eat(rfcmd.toDelete.x, rfcmd.toDelete.y, rfcmd.toDelete.letter);
+        }
+
+        Server::getServer()->getFoodSpawner()->destroy({rfcmd.toDelete.x, rfcmd.toDelete.y});
+        Server::getServer()->getFoodSpawner()->spawn(rfcmd.idx, rfcmd.food);
     }
 }
 

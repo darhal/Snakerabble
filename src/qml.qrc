@@ -10,5 +10,9 @@
         <file>ui/FoodSpawner.qml</file>
         <file>ui/MainMenu.qml</file>
         <file>ui/SnakeProp.qml</file>
+        <file>ui/HostMenu.qml</file>
+        <file>ui/JoinMenu.qml</file>
+        <file>ui/FadeAnimation.qml</file>
+        <file>ui/PopupText.qml</file>
     </qresource>
 </RCC>

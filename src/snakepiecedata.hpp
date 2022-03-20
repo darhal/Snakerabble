@@ -5,6 +5,8 @@
 #include <QDataStream>
 #include <QDebug>
 
+
+
 struct SnakePieceData
 {
     Q_GADGET
@@ -16,6 +18,7 @@ public:
     Q_PROPERTY(QChar letter MEMBER letter)
 };
 Q_DECLARE_METATYPE(SnakePieceData)
+using FoodData = SnakePieceData;
 
 inline QDataStream& operator<<(QDataStream& s, const SnakePieceData& data)
 {
@@ -42,6 +45,8 @@ public:
     uint x, y;
     Q_PROPERTY(uint x MEMBER x)
     Q_PROPERTY(uint y MEMBER y)
+
+    bool operator==(const Point& other) const { return (x == other.x && y == other.y); }
 };
 Q_DECLARE_METATYPE(Point)
 
@@ -61,6 +66,17 @@ inline QDebug operator<<(QDebug d, const Point& data){
     QDebug nsp = d.nospace();
     nsp << "Point{" <<data.x << "," << data.y << "}";
     return d;
+}
+
+namespace std {
+  template <>
+  struct hash<Point>
+  {
+    std::size_t operator()(const Point& k) const
+    {
+      return (std::size_t)k.x << 32 | (std::size_t)k.y;
+    }
+  };
 }
 
 #endif // SNAKEPIECEDATA_H

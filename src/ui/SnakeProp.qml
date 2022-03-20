@@ -7,6 +7,7 @@ Item {
     property int clientId: 0
     property var size: [25, 25]
     visible: client.otherPlayers.length != 0
+    property color c: Qt.rgba(Math.random(),Math.random(),Math.random(),1); // Qt.hex(client.otherPlayers[clientId].color);
 
     Repeater {
         model: client.otherPlayers[clientId].pdata.positions.length
@@ -15,7 +16,7 @@ Item {
             width: size[0]
             height: size[1]
             radius: width
-            color: 'white'
+            color: c//'white'
 
             Text {
                 text: client.otherPlayers[clientId].pdata.letters[index]

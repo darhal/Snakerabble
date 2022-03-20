@@ -5,6 +5,7 @@
 #include <QPoint>
 #include <qqml.h>
 #include "snakepiecedata.hpp"
+#include "trie.hpp"
 
 struct SnakeData
 {
@@ -12,8 +13,21 @@ struct SnakeData
 public:
     QVector<Point> positions;
     QString letters;
+    TrieNode* trieNode;
+    QString word;
+    uint combo;
+    uint score;
     Q_PROPERTY(QVector<Point> positions READ getPositions)
     Q_PROPERTY(QString letters READ getLetters)
+    Q_PROPERTY(QString word MEMBER word)
+    Q_PROPERTY(uint combo MEMBER combo)
+    Q_PROPERTY(uint score MEMBER score)
+
+    SnakeData() {
+        combo = 0;
+        score = 0;
+        trieNode = Trie::get()->root;
+    }
 
     const QVector<Point>& getPositions() const
     {
@@ -23,6 +37,12 @@ public:
     const QString& getLetters() const
     {
         return letters;
+    }
+
+    void eat(uint x, uint y, QChar l)
+    {
+        positions.push_front({x, y});
+        letters.push_front(l);
     }
 
     void setData(const QVector<Point>& points, const QString& letters) {
@@ -71,6 +91,11 @@ public:
     QByteArray getBytes() const;
 
     const SnakeData& getSnakeData() const
+    {
+        return snakeData;
+    }
+
+    SnakeData& getSnakeData()
     {
         return snakeData;
     }

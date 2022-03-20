@@ -38,9 +38,35 @@ Item {
         size: [boxWidth, boxHeight]
     }
 
+    Text {
+        id: scoreText
+        color: "white"
+        text: "Score : "+client.snakeController.snakeData.score+"\n"+"Current word : "+client.snakeController.snakeData.word
+        font.pixelSize: 14
+        anchors.left: parent.left
+        anchors.top: parent.top
+    }
+
+    PopupText {
+        id: popupText
+        anchors.centerIn: parent
+    }
+
+    Connections {
+        target: client
+        function onPopupScoreAnimation(word, combo) {
+            popupText.textItem.text = word
+            popupText.comboItem.text = "x"+combo;
+        }
+        function onResetAnimation(){
+            popupText.textItem.text = "Reset"
+            popupText.comboItem.text = "x0";
+        }
+    }
+
     Timer {
         id: gameTimer
-        interval: 200
+        interval: Globals.refresh_rate
         running: true
         repeat: true
         onTriggered: {
@@ -66,5 +92,28 @@ Item {
         keyMap[Qt.Key_Down]  = snake.changeDir.bind(undefined, Tools.Direction.DOWN);
         keyMap[Qt.Key_Left]  = snake.changeDir.bind(undefined, Tools.Direction.LEFT);
         keyMap[Qt.Key_Right] = snake.changeDir.bind(undefined, Tools.Direction.RIGHT);
+    }
+
+    function launchSP()
+    {
+        server.startGame();
+        arena.visible = true;
+        arena.focus = true;
+    }
+
+    function hostGame()
+    {
+        server.hostGame();
+        server.startGame(10, false);
+        arena.visible = true;
+        arena.focus = true;
+        mainWindow.title = "Snordle : Server";
+    }
+
+    function joinGame(playername, ip)
+    {
+        client.joinGame(playername, ip);
+        arena.visible = true;
+        arena.focus = true;
     }
 }

@@ -16,7 +16,9 @@ class Client : public QObject
 public:
     static Client* getClient();
 
-    Client(int id = -1);
+    Client(uint id = UINT_MAX);
+
+    Q_INVOKABLE void eat(uint x, uint y);
 
     Q_INVOKABLE void joinGame(const QString& name = "Test", const QHostAddress& ip = QHostAddress::Broadcast, quint16 port = 45454);
 
@@ -31,12 +33,14 @@ public:
 
     const QVector<ClientData>& getOtherPlayers() const { return otherPlayers; }
 
-    void setId(int id) { myId = id; }
+    void setId(uint id) { myId = id; }
 
     void setOtherPlayers(const QVector<ClientData> op) {
         otherPlayers = op;
         emit otherPlayersChanged();
     }
+
+    const QString& getName() const { return name; }
 
 private slots:
     void processPendingDatagrams();
@@ -46,14 +50,18 @@ signals:
 
     void otherPlayersChanged();
 
+    void popupScoreAnimation(const QString& word, uint combo, uint score);
+
+    void resetAnimation();
+
 private:
     QUdpSocket* udpSocket = nullptr;
     SnakeController snakeController;
+    QString name;
     QVector<ClientData> otherPlayers;
     QHostAddress serverIp;
     quint16 port;
-    int myId;
-    friend class Server;
+    uint myId;
 };
 
 #endif // CLIENT_HPP

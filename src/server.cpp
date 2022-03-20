@@ -2,6 +2,7 @@
 #include "snakedata.hpp"
 #include "client.hpp"
 #include "commands.hpp"
+#include <QNetworkInterface>
 
 Server* Server::s_Server = nullptr;
 
@@ -14,6 +15,50 @@ Server* Server::getServer()
 
 Server::Server()
 {
+    connect(&foodSpawner, &FoodSpawner::foodDataChanged, this, &Server::foodSpawnerChanged);
+}
+
+void Server::init(uint gridWidth, uint gridHeight)
+{
+    this->gridWidth = gridWidth;
+    this->gridHeight = gridHeight;
+    // foodSpawner.init(10);
+}
+
+
+void Server::handleEat(SnakeData& sd, const FoodData& old, uint pid)
+{
+    RespawnFood rfcmd;
+    rfcmd.toDelete = old;
+    rfcmd.food = foodSpawner.respawn(rfcmd.toDelete, &rfcmd.idx);
+    rfcmd.pid = pid;
+
+    if (rfcmd.food.letter != QChar(0)) {
+        sd.eat(old.x, old.y, old.letter);
+        TrieNode* nextTrieNode = Trie::get()->next(sd.trieNode, old.letter);
+        sd.word.append(old.letter);
+
+        if (nextTrieNode == nullptr) {
+            sd.trieNode = Trie::get()->root;
+            sd.word.clear();
+            sd.combo = 0;
+            emit Client::getClient()->resetAnimation();
+            qDebug() << "no words";
+        }else if (nextTrieNode->final) {
+            ++sd.combo;
+            sd.score += sd.word.size() * sd.combo;
+            qDebug() << "Created a word " << sd.word << " combo = " << sd.combo;
+            if (pid == UINT_MAX) {
+                emit Client::getClient()->popupScoreAnimation(sd.word, sd.combo, sd.score);
+            }
+        }else{
+            sd.trieNode = nextTrieNode;
+        }
+
+        if (this->isRunning()) {
+            this->sendCommand(rfcmd);
+        }
+    }
 }
 
 void Server::handleCommands(Command& cmd, const QHostAddress& adr, quint16 port)
@@ -23,28 +68,31 @@ void Server::handleCommands(Command& cmd, const QHostAddress& adr, quint16 port)
         qDebug() << jgcmd.name << " (IP:"<<adr<<") has joined the game";
         uint id = m_Clients.size();
         m_Clients.emplaceBack(ClientData{jgcmd.data, jgcmd.name, jgcmd.color, id, adr, port});
-        auto clientData = m_Clients;
-        clientData.emplaceBack(ClientData{Client::getClient()->getSnakeConroller()->getSnakeData(),
-                                          "Host", 0, (uint)clientData.size(), QHostAddress::LocalHost, 0});
-        this->sendCommand(JoinGameReply{clientData, id});
+        this->sendCommand(JoinGameReply{m_Clients, this->getHostData(), foodSpawner.getFoodData(), id});
         Client::getClient()->setOtherPlayers(m_Clients);
     }else if (cmd.id == Command::SEND_PLAYER_DATA) {
         SendPlayerCmd spcmd = cmd.getData<SendPlayerCmd>();
         m_Clients[spcmd.id].pdata = spcmd.playerData;
         Client::getClient()->setOtherPlayers(m_Clients);
+    }else if (cmd.id == Command::CONSUME_FOOD) {
+        EatFoodCmd efcmd = cmd.getData<EatFoodCmd>();
+        this->handleEat(m_Clients[efcmd.pid].pdata, efcmd.food, efcmd.pid);
     }
+}
+
+ClientData Server::getHostData()
+{
+    const auto& sd = Client::getClient()->getSnakeConroller()->getSnakeData();
+    const auto& name = Client::getClient()->getName();
+    return ClientData{sd, name, 0, UINT_MAX, QHostAddress::LocalHost, 0};
 }
 
 void Server::broadcastGameData()
 {
     if (m_Clients.size() == 0)
         return;
-    // TODO: forget to include the host!
-    auto clientData = m_Clients;
-    clientData.emplaceBack(ClientData{Client::getClient()->getSnakeConroller()->getSnakeData(),
-                                      "Host", 0, (uint)clientData.size(), QHostAddress::LocalHost, 0});
     for (const auto& c : m_Clients) {
-        this->sendCommand(SyncGameCmd{clientData}, c.adr, c.port);
+        this->sendCommand(SyncGameCmd{m_Clients, this->getHostData()}, c.adr, c.port);
     }
 }
 
@@ -54,6 +102,12 @@ void Server::hostGame()
     udpSocket->bind(45454, QUdpSocket::ShareAddress);
     connect(udpSocket, &QUdpSocket::readyRead, this, &Server::processPendingDatagrams);
     qDebug() << "Hosting game";
+}
+
+void Server::startGame(uint n, bool local)
+{
+    foodSpawner.init(n);
+    this->local = local;
 }
 
 void Server::processPendingDatagrams()
@@ -76,17 +130,36 @@ template<typename T>
 void Server::sendCommand(const T& cmdData, const QHostAddress& adr, quint16 port)
 {
     Command cmd{cmdData};
-
     if (adr == QHostAddress::Broadcast) {
         //qDebug() << "[SERVER] broadcasting command id " << T::ID;
-
         for (const auto& c : m_Clients) {
             this->sendCommand(cmdData, c.adr, c.port);
         }
-
         return;
     }
 
     //qDebug() << "[SERVER] sending command id " << T::ID << " to adr=" << adr << " port=" << port;
     udpSocket->writeDatagram(cmd.getBytes(), adr, port);
+}
+
+QString Server::getLocalIp()
+{
+    QList<QHostAddress> list = QNetworkInterface::allAddresses();
+    QHostAddress host;
+
+    for(int nIter=0; nIter<list.count(); nIter++) {
+        if(!list[nIter].isLoopback() && list[nIter].isGlobal()/*&& list[nIter].protocol() == QAbstractSocket::IPv4Protocol*/)
+            host = list[nIter];
+        //qDebug() << list[nIter];
+    }
+
+    //host = QHostAddress("81.220.35.128");
+    //qDebug() << host << host.toString().toUtf8().toBase64();
+    return host.toString().toUtf8().toBase64();
+}
+
+QHostAddress Server::getIpFromBase64(const QString& base64)
+{
+    QString ip(QByteArray::fromBase64(base64.toUtf8(), QByteArray::Base64Encoding));
+    return QHostAddress(ip);
 }

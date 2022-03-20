@@ -19,21 +19,19 @@ Item {
         //    return die();
 
         // Bit the food ?
-        var foodIdx = foodSpawner.validPositions.get(Tools.vec2ToStr(head))
+        /*var foodIdx = foodSpawner.validPositions.get(Tools.vec2ToStr(head))
         if (foodIdx != null) {
             eat(foodIdx)
-        }
+        }*/
 
+        client.eat(head[0], head[1])
         client.snakeController.move(dir, Globals.gridWidth, Globals.gridHeight)
         canChangeDir = true;
     }
 
-    function eat(foodIdx) {
-        let foodPos = foodSpawner.positions[foodIdx]
-        client.snakeController.eat(foodSpawner.positions[foodIdx][0], foodSpawner.positions[foodIdx][1], foodSpawner.letters[foodIdx])
-        foodSpawner.respawn(foodIdx)
+    /*function eat(foodIdx) {
         gameTimer.interval -= (5 * gameTimer.interval) / 100;
-    }
+    }*/
 
     function die() {
         print('game over');

@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "snakedata.hpp"
 #include "clientdata.hpp"
+#include "foodspawner.hpp"
 
 struct Command
 {
@@ -13,7 +14,9 @@ struct Command
         JOIN_GAME,
         JOIN_GAME_REPLY,
         BROADCAST_SYNC,
-        SEND_PLAYER_DATA
+        SEND_PLAYER_DATA,
+        CONSUME_FOOD,
+        RESPAWN_FOOD,
     };
 
     uint id;
@@ -90,23 +93,25 @@ struct JoinGameReply
     using Cmd = JoinGameReply;
     constexpr static uint ID = Command::JOIN_GAME_REPLY;
     QVector<ClientData> playersData;
+    ClientData hostData;
+    QVector<FoodData> foodData;
     uint id;
 
     friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
     {
-        s << data.playersData << data.id;
+        s << data.playersData << data.foodData << data.hostData << data.id;
         return s;
     }
 
     friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
     {
-        s >> data.playersData >> data.id;
+        s >> data.playersData >> data.foodData >> data.hostData >> data.id;
         return s;
     }
 
     friend inline QDebug operator<<(QDebug d, const Cmd& data){
         QDebug nsp = d.nospace();
-        nsp << "JoinGameReply{"<<data.playersData<<","<<data.id<<"}";
+        nsp << "JoinGameReply{"<<data.playersData<<","<<data.foodData<<","<<data.id<<"}";
         return d;
     }
 };
@@ -117,22 +122,23 @@ struct JoinBroadcastCmd
     using Cmd = JoinBroadcastCmd;
     constexpr static uint ID = Command::JOIN_GAME;
     ClientData data;
+    QVector<FoodData> food;
 
     friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
     {
-        s << data.data;
+        s << data.data << data.food;
         return s;
     }
 
     friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
     {
-        s >> data.data;
+        s >> data.data >> data.food;
         return s;
     }
 
     friend inline QDebug operator<<(QDebug d, const Cmd& data){
         QDebug nsp = d.nospace();
-        nsp << "JoinBroadcastCmd{"<<data.data<<"}";
+        nsp << "JoinBroadcastCmd{"<<data.data<<","<<data.food<<"}";
         return d;
     }
 };
@@ -143,16 +149,17 @@ struct SyncGameCmd
     using Cmd = SyncGameCmd;
     constexpr static uint ID = Command::BROADCAST_SYNC;
     QVector<ClientData> playersData;
+    ClientData hostData;
 
     friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
     {
-        s << data.playersData;
+        s << data.playersData << data.hostData;
         return s;
     }
 
     friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
     {
-        s >> data.playersData;
+        s >> data.playersData >> data.hostData;
         return s;
     }
 
@@ -186,6 +193,62 @@ struct SendPlayerCmd
     friend inline QDebug operator<<(QDebug d, const Cmd& data){
         QDebug nsp = d.nospace();
         nsp << "SyncGameCmd{"<<data.playerData<<","<<data.id<<"}";
+        return d;
+    }
+};
+
+// Client to Server
+struct EatFoodCmd
+{
+    using Cmd = EatFoodCmd;
+    constexpr static uint ID = Command::CONSUME_FOOD;
+    FoodData food;
+    uint pid;
+
+    friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
+    {
+        s << data.food << data.pid;
+        return s;
+    }
+
+    friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
+    {
+        s >> data.food >> data.pid;
+        return s;
+    }
+
+    friend inline QDebug operator<<(QDebug d, const Cmd& data){
+        QDebug nsp = d.nospace();
+        nsp << "EatFoodCmd{"<<data.food<<","<<data.pid<<"}";
+        return d;
+    }
+};
+
+// Server to all
+struct RespawnFood
+{
+    using Cmd = RespawnFood;
+    constexpr static uint ID = Command::RESPAWN_FOOD;
+    FoodData food;
+    FoodData toDelete;
+    uint idx;
+    uint pid;
+
+    friend inline QDataStream& operator<<(QDataStream& s, const Cmd& data)
+    {
+        s << data.food << data.toDelete << data.idx << data.pid;
+        return s;
+    }
+
+    friend inline QDataStream& operator>>(QDataStream& s, Cmd& data)
+    {
+        s >> data.food  >> data.toDelete >> data.idx >> data.pid;
+        return s;
+    }
+
+    friend inline QDebug operator<<(QDebug d, const Cmd& data){
+        QDebug nsp = d.nospace();
+        nsp << "EatFoodCmd{"<<data.food<<"}";
         return d;
     }
 };

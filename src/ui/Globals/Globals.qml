@@ -13,5 +13,6 @@ QtObject {
     readonly property int gridWidth: 80  // desktop_width / 40 //80
     readonly property int gridHeight: 40 // desktop_height / 40//45
     readonly property string alphabet: "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    readonly property bool debug: true
+    readonly property bool debug: false // true
+    readonly property int refresh_rate: 100
 }

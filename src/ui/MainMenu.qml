@@ -5,6 +5,7 @@ import Globals
 
 Item {
     id: root
+
     Column {
         anchors.centerIn: parent
         width: Globals.desktop_width * (1/4)
@@ -16,9 +17,10 @@ Item {
             text: "Singleplayer"
             onClicked: {
                 //server.broadcastGameData();
+                /*arena.visible = true
+                arena.focus = true*/
                 root.visible = false
-                arena.visible = true
-                arena.focus = true
+                arena.launchSP()
             }
         }
 
@@ -27,11 +29,8 @@ Item {
             height: Globals.desktop_height * (1/8)
             text: "Host a game"
             onClicked: {
-                server.hostGame();
-                mainWindow.title = "Snordle : Server"
                 root.visible = false
-                arena.visible = true
-                arena.focus = true
+                hostMenu.visible = true
             }
         }
 
@@ -40,10 +39,8 @@ Item {
             height: Globals.desktop_height * (1/8)
             text: "Join a game"
             onClicked: {
-                client.joinGame()
                 root.visible = false
-                arena.visible = true
-                arena.focus = true
+                joinMenu.visible = true
             }
         }
     }
