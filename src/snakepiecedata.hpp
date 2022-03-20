@@ -5,8 +5,6 @@
 #include <QDataStream>
 #include <QDebug>
 
-
-
 struct SnakePieceData
 {
     Q_GADGET

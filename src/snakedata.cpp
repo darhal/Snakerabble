@@ -1,6 +1,5 @@
 #include "snakedata.hpp"
 
-
 QByteArray SnakeController::getBytes() const
 {
     QByteArray bytes;

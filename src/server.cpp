@@ -48,9 +48,9 @@ void Server::handleEat(SnakeData& sd, const FoodData& old, uint pid)
             ++sd.combo;
             sd.score += sd.word.size() * sd.combo;
             qDebug() << "Created a word " << sd.word << " combo = " << sd.combo;
-            if (pid == UINT_MAX) {
+            if (pid == UINT_MAX)
                 emit Client::getClient()->popupScoreAnimation(sd.word, sd.combo, sd.score);
-            }
+            sd.trieNode = nextTrieNode;
         }else{
             sd.trieNode = nextTrieNode;
         }

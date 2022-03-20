@@ -4,7 +4,10 @@
 #include "server.hpp"
 #include <QRandomGenerator>
 
-std::array<int, 26> FoodSpawner::ENGLISH_LETTER_FREQ = {};
+std::array<int, 26> FoodSpawner::ENGLISH_LETTER_FREQ = {
+    817, 149, 278, 425, 1270, 223, 202, 609, 697, 15, 77, 403,
+    241, 675, 751, 193, 9, 599, 633, 906, 276, 97, 236, 15, 197, 7
+};
 std::array<int, 26> FoodSpawner::ENGLISH_LETTER_FREQ_PREFIX = {};
 
 uint random(int min, int max){

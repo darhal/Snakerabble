@@ -5,7 +5,7 @@
 
 struct TrieNode {
     TrieNode* nodes[26] = {};
-    bool final;
+    bool final = false;
 };
 
 class Trie

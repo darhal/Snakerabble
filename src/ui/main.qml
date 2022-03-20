@@ -7,7 +7,7 @@ Window {
     width: Globals.screen_width
     height: Globals.screen_height
     visible: true
-    title: "Snordle"
+    title: "Snakerabble"
 
     Arena {
         id: arena

@@ -25,6 +25,7 @@ void Trie::fill(const char** arr, std::size_t len)
 
     for (std::size_t i = 0; i < len; i++) {
         cur = root;
+
         for (size_t j = 0; arr[i][j]; j++) {
             char cl = arr[i][j];
             if (!cur->nodes[cl-'A']) {
@@ -32,6 +33,7 @@ void Trie::fill(const char** arr, std::size_t len)
             }
             cur = cur->nodes[cl-'A'];
         }
+
         cur->final = true;
     }
 }
