@@ -11,24 +11,18 @@ Item {
         width: Globals.desktop_width * (1/4)
         spacing: Globals.padding
 
-        Text {
+        TextField {
+            id: speedField
             width: parent.width
             height: Globals.desktop_height * (1/32)
-            text: "Provide server id and name :"
+            placeholderText : "Speed (1-10)"
         }
 
         TextField {
-            id: serverId
+            id: foodField
             width: parent.width
             height: Globals.desktop_height * (1/32)
-            placeholderText : "Server ID"
-        }
-
-        TextField {
-            id: playerName
-            width: parent.width
-            height: Globals.desktop_height * (1/32)
-            placeholderText: "Playername"
+            placeholderText: "Food Abundancy"
         }
 
         Button {
@@ -36,7 +30,11 @@ Item {
             height: Globals.desktop_height * (1/16)
             text: "Start"
             onClicked: {
-                arena.joinGame(playerName.text, server.getIpFromBase64(serverId.text))
+                var speed = parseInt(speedField.text)
+                var food = parseInt(foodField.text)
+                console.log(food)
+                arena.gameTimer.interval = (10/speed) * 10;
+                arena.launchSP(food)
                 root.visible = false
             }
         }

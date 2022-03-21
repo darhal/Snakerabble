@@ -14,5 +14,7 @@
         <file>ui/JoinMenu.qml</file>
         <file>ui/FadeAnimation.qml</file>
         <file>ui/PopupText.qml</file>
+        <file>ui/SinglePlayerMenu.qml</file>
+        <file>assets/logo.png</file>
     </qresource>
 </RCC>

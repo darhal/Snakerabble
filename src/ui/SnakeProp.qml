@@ -7,7 +7,7 @@ Item {
     property int clientId: 0
     property var size: [25, 25]
     visible: client.otherPlayers.length != 0
-    property color c: Qt.rgba(Math.random(),Math.random(),Math.random(),1); // Qt.hex(client.otherPlayers[clientId].color);
+    property color c: Qt.rgba(Math.random(), Math.random(), Math.random(), 1); // Qt.hex(client.otherPlayers[clientId].color);
 
     Repeater {
         model: client.otherPlayers[clientId].pdata.positions.length

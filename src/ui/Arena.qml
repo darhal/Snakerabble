@@ -10,6 +10,7 @@ Item {
     property int boxHeight: height / Globals.gridHeight
     property alias snake: snake
     property alias foodSpawner: foodSpawner
+    property alias gameTimer: gameTimer
 
     Rectangle {
         id: background
@@ -45,6 +46,8 @@ Item {
         font.pixelSize: 14
         anchors.left: parent.left
         anchors.top: parent.top
+        anchors.leftMargin: Globals.padding/3
+        anchors.topMargin: Globals.padding/3
     }
 
     PopupText {
@@ -94,9 +97,9 @@ Item {
         keyMap[Qt.Key_Right] = snake.changeDir.bind(undefined, Tools.Direction.RIGHT);
     }
 
-    function launchSP()
+    function launchSP(food)
     {
-        server.startGame();
+        server.startGame(food);
         arena.visible = true;
         arena.focus = true;
     }

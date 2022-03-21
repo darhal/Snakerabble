@@ -14,6 +14,12 @@ Window {
         visible: false
     }
 
+    SinglePlayerMenu {
+        id: spMenu
+        anchors.fill: parent
+        visible: false
+    }
+
     HostMenu {
         id: hostMenu
         anchors.fill: parent
@@ -27,6 +33,7 @@ Window {
     }
 
     MainMenu {
+        id: mainMenu
         anchors.fill: parent
     }
 

@@ -32,5 +32,15 @@ Item {
                 root.visible = false
             }
         }
+
+        Button {
+            width: Globals.desktop_width * (1/4)
+            height: Globals.desktop_height * (1/16)
+            text: "< Back"
+            onClicked: {
+                mainMenu.visible = true
+                root.visible = false
+            }
+        }
     }
 }

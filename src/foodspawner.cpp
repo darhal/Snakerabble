@@ -33,9 +33,13 @@ void FoodSpawner::init(uint n)
 {
     auto gridWidth = Server::getServer()->getGridSize().x;
     auto gridHeight = Server::getServer()->getGridSize().y;
+    n = std::min(gridHeight*gridWidth, n);
 
     for (uint i = 0; i < n; i++) {
         Point pt{random(0, gridWidth), random(0, gridHeight)};
+        while (validPositions.find(pt) != validPositions.end()) {
+            pt = {random(0, gridWidth), random(0, gridHeight)};
+        }
         foodData.emplaceBack(FoodData{pt.x, pt.y, QChar(this->pickIndex()+'A')});
         validPositions.insert(pt, i);
     }
