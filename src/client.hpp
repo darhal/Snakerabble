@@ -54,6 +54,8 @@ signals:
 
     void resetAnimation();
 
+    void death();
+
 private:
     QUdpSocket* udpSocket = nullptr;
     SnakeController snakeController;

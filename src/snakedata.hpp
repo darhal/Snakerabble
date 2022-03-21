@@ -41,6 +41,17 @@ public:
         return letters;
     }
 
+    void remove(uint start, uint end)
+    {
+        // qDebug() << "Remove between " << start << " e = " << end <<" - "<< positions.size()<<" - "<< letters.size();
+        const auto pb = positions.begin();
+        const auto pe = end >= positions.size() ? positions.end() : pb + end;
+        positions.erase(pb + start, pe);
+        const auto pbl = letters.begin();
+        const auto pel = end >= letters.size() ? letters.end() : pbl + end;
+        letters.erase(pbl + start, pel);
+    }
+
     int eat(uint x, uint y, QChar l);
 
     void setData(const QVector<Point>& points, const QString& letters) {
@@ -109,6 +120,8 @@ public:
 
 signals:
     void dataChanged();
+
+    void death();
 
 private:
     SnakeData snakeData;

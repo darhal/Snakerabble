@@ -16,8 +16,8 @@ int SnakeData::eat(uint x, uint y, QChar l)
         if (wordRange.back().x == wordRange.back().y)
             wordRange.pop_back();
         wordRange.emplaceBack(Point{(uint)positions.size() - 1, (uint)positions.size() - 1});
-        qDebug() << wordRange;
-        qDebug() << "no words";
+        //qDebug() << wordRange;
+        //qDebug() << "no words";
         return 2;
     }else if (nextTrieNode->final) {
         ++combo;
@@ -25,8 +25,8 @@ int SnakeData::eat(uint x, uint y, QChar l)
         wordRange.back().y = positions.size() - 1;
         //wordRange.emplaceBack(Point{(uint)positions.size() - 1, (uint)positions.size() - 1});
         trieNode = nextTrieNode;
-        qDebug() << "Created a word " << word << " combo = " << combo;
-        qDebug() << wordRange;
+        //qDebug() << "Created a word " << word << " combo = " << combo;
+        //qDebug() << wordRange;
         return 1;
     }else{
         trieNode = nextTrieNode;
@@ -67,8 +67,8 @@ void SnakeController::move(uint direction, uint gridWidth, uint gridHeight)
         break;
     }
 
-    this->hit(head.x, head.y);
     snakeData.positions.push_front(head);
+    this->hit(head.x, head.y);
     emit dataChanged();
 }
 
@@ -81,33 +81,46 @@ void SnakeController::eat(uint x, uint y, QChar letter)
 void SnakeController::hit(uint x, uint y)
 {
     Point pos = {x, y};
-    auto itr = std::find_if(snakeData.positions.begin(), snakeData.positions.end(), [&pos](const auto& p) { return p == pos; });
+    auto itr = std::find_if(snakeData.positions.begin() + 1, snakeData.positions.end(), [&pos](const auto& p) { return p == pos; });
 
     if (itr != snakeData.positions.end()) {
         auto hitIdx = std::distance(itr, snakeData.positions.end());
         auto lb = std::lower_bound(snakeData.wordRange.begin(), snakeData.wordRange.end(), hitIdx,
                                    [](const Point& r, uint l){return r.x < l;});
-        if (lb == snakeData.wordRange.end())
-            qDebug() << "out of bound Remove " << lb->x << "," << lb->y;
+        // qDebug() << "hit index " << hitIdx << " -> " << snakeData.wordRange << " -> "<< snakeData.letters;
+
+        if (lb == snakeData.wordRange.end()) {
+            qDebug() << "Out of bound Remove l = " << hitIdx;
+            lb = std::prev(lb);
+        }
+
         if (lb != snakeData.wordRange.end() && lb->x != lb->y && lb->x <snakeData.positions.size()) {
-            qDebug() << "Remove " << lb->x << "," << lb->y;
-            const auto pb = snakeData.positions.begin();
-            const auto pe = lb->y >= snakeData.positions.size() ? snakeData.positions.end() : pb + lb->y;
-            snakeData.positions.erase(pb + lb->x, pe);
-            const auto pbl = snakeData.letters.begin();
-            const auto pel = lb->y >= snakeData.letters.size() ? snakeData.letters.end() : pbl + lb->y;
-            snakeData.letters.erase(pbl + lb->x, pel);
+            if (lb != snakeData.wordRange.begin() && lb->x != hitIdx)
+                lb = std::prev(lb);
+            if (hitIdx > lb->y)
+                return;
+            // qDebug() << "Hit on (" << lb->x << "," << lb->y << ")";
+            snakeData.remove(snakeData.positions.size() - lb->y - 1, snakeData.positions.size() - lb->x);
             auto diff = lb->y - lb->x + 1;
-            qDebug() << "diff " << diff;
-            for (auto lbitr = ++lb; lbitr != snakeData.wordRange.end(); lbitr++) {
+            //qDebug() << "Remove " << lb->x << "," << lb->y << " l = " << hitIdx << " diff " << diff;
+            auto lbitr = lb; lbitr++;
+
+            for (; lbitr != snakeData.wordRange.end(); lbitr++) {
+                //qDebug() << *lbitr;
                 lbitr->x -= diff;
                 lbitr->y -= diff;
-                qDebug() << *lbitr;
+                //qDebug() << *lbitr;
             }
+
             snakeData.wordRange.erase(lb);
-            qDebug() << snakeData.wordRange;
+            //qDebug() << "NEW : hit index " << hitIdx << " -> " << snakeData.wordRange << " -> "<< snakeData.letters;
+            if (!snakeData.positions.size() || !snakeData.letters.size()) {
+                qDebug() << "Die!";
+                emit death();
+            }
         }else{
             qDebug() << "Die!";
+            emit death();
         }
     }
 }

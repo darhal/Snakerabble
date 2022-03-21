@@ -55,6 +55,12 @@ Item {
         anchors.centerIn: parent
     }
 
+    PopupText {
+        id: endScreenText
+        anchors.centerIn: parent
+        activate: false
+    }
+
     Connections {
         target: client
         function onPopupScoreAnimation(word, combo) {
@@ -64,6 +70,12 @@ Item {
         function onResetAnimation(){
             popupText.textItem.text = "Reset"
             popupText.comboItem.text = "x0";
+        }
+        function onDeath()
+        {
+            gameTimer.stop();
+            endScreenText.textItem.text = "You have lost!"
+            endScreenText.comboItem.text = "Final Score : "+client.snakeController.snakeData.score
         }
     }
 

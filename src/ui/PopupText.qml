@@ -3,6 +3,7 @@ import QtQuick 2.0
 Item {
     property alias textItem: textItem
     property alias comboItem: comboItem
+    property bool activate: true
     width: Math.max(textItem.paintedWidth, comboItem.paintedWidth)
     height: textItem.paintedHeight + comboItem.paintedHeight
 
@@ -39,7 +40,7 @@ Item {
 
         Timer {
             interval: 2000
-            running: textItem.text != ""
+            running: activate && textItem.text != ""
             repeat: false
             onTriggered: {
                 textItem.text = "";

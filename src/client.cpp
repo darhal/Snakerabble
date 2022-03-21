@@ -13,26 +13,29 @@ Client* Client::getClient()
 
 Client::Client(uint id) : myId(id)
 {
-    /*snakeController << SnakePieceData{20, 20, QChar(FoodSpawner::random(0,26)+'A')};
+    snakeController << SnakePieceData{20, 20, QChar(FoodSpawner::random(0,26)+'A')};
     snakeController << SnakePieceData{20, 21, QChar(FoodSpawner::random(0,26)+'A')};
     snakeController << SnakePieceData{20, 22, QChar(FoodSpawner::random(0,26)+'A')};
     snakeController << SnakePieceData{21, 22, QChar(FoodSpawner::random(0,26)+'A')};
-    snakeController << SnakePieceData{22, 22, QChar(FoodSpawner::random(0,26)+'A')};*/
+    snakeController << SnakePieceData{22, 22, QChar(FoodSpawner::random(0,26)+'A')};
 
-    snakeController << SnakePieceData{23, 22, QChar('H')};
-    snakeController << SnakePieceData{22, 22, QChar('E')};
-    snakeController << SnakePieceData{21, 22, QChar('L')};
-    snakeController << SnakePieceData{20, 22, QChar('L')};
-    snakeController << SnakePieceData{19, 22, QChar('O')};
-    snakeController << SnakePieceData{18, 22, QChar('H')};
-    snakeController << SnakePieceData{17, 22, QChar('O')};
-    snakeController << SnakePieceData{16, 22, QChar('W')};
-    snakeController << SnakePieceData{15, 22, QChar('A')};
-    snakeController << SnakePieceData{14, 22, QChar('R')};
-    snakeController << SnakePieceData{13, 22, QChar('E')};
-    snakeController << SnakePieceData{12, 22, QChar('Y')};
-    snakeController << SnakePieceData{11, 22, QChar('O')};
-    snakeController << SnakePieceData{10, 22, QChar('U')};
+    /*snakeController << SnakePieceData{23, 22, QChar('H')}; // 0
+    snakeController << SnakePieceData{22, 22, QChar('E')}; // 1
+    snakeController << SnakePieceData{21, 22, QChar('L')}; // 2
+    snakeController << SnakePieceData{20, 22, QChar('L')}; // 3
+    snakeController << SnakePieceData{19, 22, QChar('O')}; // 4
+    snakeController << SnakePieceData{18, 22, QChar('H')}; // 5
+    snakeController << SnakePieceData{17, 22, QChar('O')}; // 6
+    snakeController << SnakePieceData{16, 22, QChar('W')}; // 7
+    snakeController << SnakePieceData{15, 22, QChar('A')}; // 8
+    snakeController << SnakePieceData{14, 22, QChar('R')}; // 9
+    snakeController << SnakePieceData{13, 22, QChar('E')}; // 10
+    snakeController << SnakePieceData{12, 22, QChar('Y')}; // 11
+    snakeController << SnakePieceData{11, 22, QChar('O')}; // 12
+    snakeController << SnakePieceData{10, 22, QChar('U')}; // 13
+    connect(&snakeController, &SnakeController::death, this, &Client::death);
+    qDebug() << snakeController.getSnakeData().letters << "(" << snakeController.getSnakeData().positions.size() << ","
+             << snakeController.getSnakeData().letters.size() << ")";*/
 }
 
 void Client::eat(uint x, uint y)

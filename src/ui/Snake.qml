@@ -12,6 +12,8 @@ Item {
 
     function move() {
         let sd = client.snakeController.snakeData
+        if (sd.positions.length === 0)
+            return
         var head = [sd.positions[0].x, sd.positions[0].y];
 
         // Bit itself ?
