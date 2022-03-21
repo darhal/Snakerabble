@@ -70,7 +70,7 @@ Item {
     Timer {
         id: gameTimer
         interval: Globals.refresh_rate
-        running: true
+        running: false
         repeat: true
         onTriggered: {
             client.sendGameData()

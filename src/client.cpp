@@ -1,5 +1,6 @@
 #include "client.hpp"
 #include "server.hpp"
+#include "foodspawner.hpp"
 
 Client* Client::s_Client = nullptr;
 
@@ -12,11 +13,26 @@ Client* Client::getClient()
 
 Client::Client(uint id) : myId(id)
 {
-    snakeController << SnakePieceData{20, 20, 'A'};
-    snakeController << SnakePieceData{20, 21, 'B'};
-    snakeController << SnakePieceData{20, 22, 'C'};
-    snakeController << SnakePieceData{21, 22, 'D'};
-    snakeController << SnakePieceData{22, 22, 'E'};
+    /*snakeController << SnakePieceData{20, 20, QChar(FoodSpawner::random(0,26)+'A')};
+    snakeController << SnakePieceData{20, 21, QChar(FoodSpawner::random(0,26)+'A')};
+    snakeController << SnakePieceData{20, 22, QChar(FoodSpawner::random(0,26)+'A')};
+    snakeController << SnakePieceData{21, 22, QChar(FoodSpawner::random(0,26)+'A')};
+    snakeController << SnakePieceData{22, 22, QChar(FoodSpawner::random(0,26)+'A')};*/
+
+    snakeController << SnakePieceData{23, 22, QChar('H')};
+    snakeController << SnakePieceData{22, 22, QChar('E')};
+    snakeController << SnakePieceData{21, 22, QChar('L')};
+    snakeController << SnakePieceData{20, 22, QChar('L')};
+    snakeController << SnakePieceData{19, 22, QChar('O')};
+    snakeController << SnakePieceData{18, 22, QChar('H')};
+    snakeController << SnakePieceData{17, 22, QChar('O')};
+    snakeController << SnakePieceData{16, 22, QChar('W')};
+    snakeController << SnakePieceData{15, 22, QChar('A')};
+    snakeController << SnakePieceData{14, 22, QChar('R')};
+    snakeController << SnakePieceData{13, 22, QChar('E')};
+    snakeController << SnakePieceData{12, 22, QChar('Y')};
+    snakeController << SnakePieceData{11, 22, QChar('O')};
+    snakeController << SnakePieceData{10, 22, QChar('U')};
 }
 
 void Client::eat(uint x, uint y)

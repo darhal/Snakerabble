@@ -10,10 +10,6 @@ std::array<int, 26> FoodSpawner::ENGLISH_LETTER_FREQ = {
 };
 std::array<int, 26> FoodSpawner::ENGLISH_LETTER_FREQ_PREFIX = {};
 
-uint random(int min, int max){
-    return (QRandomGenerator::global()->generate64() + min) % max;
-}
-
 FoodSpawner::FoodSpawner()
 {
     for (int i = 0; i < 26; i++) {

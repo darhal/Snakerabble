@@ -3,6 +3,7 @@
 
 #include <QTimer>
 #include <QString>
+#include <QRandomGenerator>
 #include "snakepiecedata.hpp"
 
 class FoodSpawner : public QObject
@@ -32,6 +33,10 @@ public:
     const QVector<FoodData>& getFoodData() const { return foodData; }
 
     uint pickIndex();
+
+    static uint random(int min, int max){
+        return (QRandomGenerator::global()->generate64() + min) % max;
+    }
 
 signals:
     void foodDataChanged();

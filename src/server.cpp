@@ -34,25 +34,13 @@ void Server::handleEat(SnakeData& sd, const FoodData& old, uint pid)
     rfcmd.pid = pid;
 
     if (rfcmd.food.letter != QChar(0)) {
-        sd.eat(old.x, old.y, old.letter);
+        auto eres = sd.eat(old.x, old.y, old.letter);
         TrieNode* nextTrieNode = Trie::get()->next(sd.trieNode, old.letter);
-        sd.word.append(old.letter);
 
-        if (nextTrieNode == nullptr) {
-            sd.trieNode = Trie::get()->root;
-            sd.word.clear();
-            sd.combo = 0;
+        if (eres == 1 && pid == UINT_MAX) {
+            emit Client::getClient()->popupScoreAnimation(sd.word, sd.combo, sd.score);
+        }else if (eres == 2 && pid == UINT_MAX) {
             emit Client::getClient()->resetAnimation();
-            qDebug() << "no words";
-        }else if (nextTrieNode->final) {
-            ++sd.combo;
-            sd.score += sd.word.size() * sd.combo;
-            qDebug() << "Created a word " << sd.word << " combo = " << sd.combo;
-            if (pid == UINT_MAX)
-                emit Client::getClient()->popupScoreAnimation(sd.word, sd.combo, sd.score);
-            sd.trieNode = nextTrieNode;
-        }else{
-            sd.trieNode = nextTrieNode;
         }
 
         if (this->isRunning()) {

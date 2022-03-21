@@ -12,6 +12,7 @@ struct SnakeData
     Q_GADGET
 public:
     QVector<Point> positions;
+    QVector<Point> wordRange;
     QString letters;
     TrieNode* trieNode;
     QString word;
@@ -27,6 +28,7 @@ public:
         combo = 0;
         score = 0;
         trieNode = Trie::get()->root;
+        wordRange.emplaceBack(Point{0,0});
     }
 
     const QVector<Point>& getPositions() const
@@ -39,11 +41,7 @@ public:
         return letters;
     }
 
-    void eat(uint x, uint y, QChar l)
-    {
-        positions.push_front({x, y});
-        letters.push_front(l);
-    }
+    int eat(uint x, uint y, QChar l);
 
     void setData(const QVector<Point>& points, const QString& letters) {
         this->letters = letters;
@@ -83,9 +81,7 @@ class SnakeController : public QObject
 public:
     void operator<<(const SnakePieceData& p)
     {
-        Point pt{p.x, p.y};
-        snakeData.positions << pt;
-        snakeData.letters.append(p.letter);
+        snakeData.eat(p.x, p.y, p.letter);
     }
 
     QByteArray getBytes() const;
@@ -108,6 +104,8 @@ public:
     Q_INVOKABLE void move(uint direction, uint gridWidth, uint gridHeight);
 
     Q_INVOKABLE void eat(uint x, uint y, QChar letter);
+
+    Q_INVOKABLE void hit(uint x, uint y);
 
 signals:
     void dataChanged();
