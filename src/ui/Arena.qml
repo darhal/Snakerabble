@@ -114,6 +114,7 @@ Item {
         server.startGame(food);
         arena.visible = true;
         arena.focus = true;
+        arena.gameTimer.start();
     }
 
     function hostGame()
@@ -123,6 +124,7 @@ Item {
         arena.visible = true;
         arena.focus = true;
         mainWindow.title = "Snordle : Server";
+        arena.gameTimer.start();
     }
 
     function joinGame(playername, ip)
@@ -130,5 +132,6 @@ Item {
         client.joinGame(playername, ip);
         arena.visible = true;
         arena.focus = true;
+        arena.gameTimer.start();
     }
 }

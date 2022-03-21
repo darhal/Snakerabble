@@ -32,9 +32,8 @@ Item {
             onClicked: {
                 var speed = parseInt(speedField.text)
                 var food = parseInt(foodField.text)
-                console.log(food)
                 arena.gameTimer.interval = (10/speed) * 10;
-                arena.gameTimer.start();
+                //arena.gameTimer.start();
                 arena.launchSP(food)
                 root.visible = false
             }
