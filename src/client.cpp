@@ -18,6 +18,7 @@ Client::Client(uint id) : myId(id)
     snakeController << SnakePieceData{20, 22, QChar(FoodSpawner::random(0,26)+'A')};
     snakeController << SnakePieceData{21, 22, QChar(FoodSpawner::random(0,26)+'A')};
     snakeController << SnakePieceData{22, 22, QChar(FoodSpawner::random(0,26)+'A')};
+    connect(&snakeController, &SnakeController::death, this, &Client::death);
 
     /*snakeController << SnakePieceData{23, 22, QChar('H')}; // 0
     snakeController << SnakePieceData{22, 22, QChar('E')}; // 1
@@ -33,7 +34,6 @@ Client::Client(uint id) : myId(id)
     snakeController << SnakePieceData{12, 22, QChar('Y')}; // 11
     snakeController << SnakePieceData{11, 22, QChar('O')}; // 12
     snakeController << SnakePieceData{10, 22, QChar('U')}; // 13
-    connect(&snakeController, &SnakeController::death, this, &Client::death);
     qDebug() << snakeController.getSnakeData().letters << "(" << snakeController.getSnakeData().positions.size() << ","
              << snakeController.getSnakeData().letters.size() << ")";*/
 }

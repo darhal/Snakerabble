@@ -115,11 +115,11 @@ void SnakeController::hit(uint x, uint y)
             snakeData.wordRange.erase(lb);
             //qDebug() << "NEW : hit index " << hitIdx << " -> " << snakeData.wordRange << " -> "<< snakeData.letters;
             if (!snakeData.positions.size() || !snakeData.letters.size()) {
-                qDebug() << "Die!";
+                qDebug() << "Die! 2";
                 emit death();
             }
         }else{
-            qDebug() << "Die!";
+            qDebug() << "Die! 1";
             emit death();
         }
     }
